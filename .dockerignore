@@ -1,0 +1,11 @@
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.playwright/
+app.db
+tests/
+.git
+.gitignore
+docs/

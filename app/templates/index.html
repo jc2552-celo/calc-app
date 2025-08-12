@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Calculations <span class="chip">{{ user }}</span></h2>
+
+<article>
+  <h3>Add Calculation</h3>
+  <form hx-post="/ui/calculations" hx-target="#calc-body" hx-swap="afterbegin">
+    <label>Operation
+      <select name="operation" required>
+        <option value="add">add</option>
+        <option value="subtract">subtract</option>
+        <option value="multiply">multiply</option>
+        <option value="divide">divide</option>
+      </select>
+    </label>
+    <label>A <input name="a" type="number" step="any" required></label>
+    <label>B <input name="b" type="number" step="any" required></label>
+    <button type="submit">Create</button>
+  </form>
+</article>
+
+<article>
+  <h3>Browse</h3>
+  <table role="grid">
+    <thead>
+      <tr><th>ID</th><th>Operation</th><th>Operands</th><th>Result</th><th>Updated</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="calc-body">
+      {% for row in rows %}
+        {% include "partials/calc_row.html" %}
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}
