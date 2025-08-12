@@ -1,0 +1,15 @@
+# Python / env
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# App artifacts
+app.db
+.playwright/
+*.log
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
