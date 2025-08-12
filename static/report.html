@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Reports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; }
+    .card { border: 1px solid #eee; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: .5rem; border-bottom: 1px solid #eee; text-align: left; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); }
+    .muted { color: #666; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <h1>Usage Reports</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Metrics</h2>
+      <div id="metrics"></div>
+      <p class="muted"><a href="/reports/metrics.csv">Download CSV</a></p>
+    </div>
+    <div class="card">
+      <h2>Recent Calculations</h2>
+      <table id="recent"><thead><tr>
+        <th>When</th><th>Op</th><th>Operand1</th><th>Operand2</th><th>Result</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
+  <script>
+    async function load() {
+      const m = await (await fetch('/reports/metrics')).json();
+      const metricsEl = document.getElementById('metrics');
+      metricsEl.innerHTML = `
+        <div><strong>Total:</strong> ${m.total_calculations}</div>
+        <div><strong>First:</strong> ${m.first_calculation_at || '—'}</div>
+        <div><strong>Last:</strong> ${m.last_calculation_at || '—'}</div>
+        <div><strong>Avg gap (s):</strong> ${m.average_time_between_seconds?.toFixed?.(2) ?? '—'}</div>
+        <div><strong>By Operation:</strong><pre>${JSON.stringify(m.operations_breakdown, null, 2)}</pre></div>
+      `;
+
+      const r = await (await fetch('/reports/recent?limit=10')).json();
+      const tbody = document.querySelector('#recent tbody');
+      tbody.innerHTML = '';
+      for (const item of r.items) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${new Date(item.created_at).toLocaleString()}</td>
+          <td>${item.operation}</td>
+          <td>${item.operand1}</td>
+          <td>${item.operand2}</td>
+          <td>${item.result}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+    load().catch(err => { console.error(err); alert('Failed to load report.'); });
+  </script>
+</body>
+</html>

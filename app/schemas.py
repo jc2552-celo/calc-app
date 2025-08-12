@@ -1,35 +1,38 @@
-from pydantic import BaseModel, field_validator
-from typing import List, Optional
-from enum import Enum
+from pydantic import BaseModel, Field
+from typing import Dict, List, Optional
+from datetime import datetime
 
-class OperationType(str, Enum):
-    add = "add"
-    subtract = "subtract"
-    multiply = "multiply"
-    divide = "divide"
+# ===== Reports =====
+class Metrics(BaseModel):
+    total_calculations: int
+    operations_breakdown: Dict[str, int]
+    first_calculation_at: Optional[datetime] = None
+    last_calculation_at: Optional[datetime] = None
+    average_time_between_seconds: Optional[float] = None
 
-class CalculationBase(BaseModel):
-    operation: OperationType
-    operands: List[float]
-
-    @field_validator("operands")
-    @classmethod
-    def check_operands(cls, v):
-        if len(v) < 2:
-            raise ValueError("Provide at least two operands")
-        return v
-
-class CalculationCreate(CalculationBase):
-    pass
-
-class CalculationUpdate(BaseModel):
-    operation: Optional[OperationType] = None
-    operands: Optional[List[float]] = None
-
-class CalculationOut(CalculationBase):
+class RecentCalculation(BaseModel):
     id: int
-    result: Optional[float]
-    user_id: str
+    operation: str
+    operand1: float
+    operand2: float
+    result: float
+    created_at: datetime
+
+class RecentCalculations(BaseModel):
+    items: List[RecentCalculation]
+
+# ===== Calculations API =====
+class CalculationCreate(BaseModel):
+    operation: str
+    # exactly two numbers required (works across Pydantic versions)
+    operands: list[float] = Field(min_length=2, max_length=2)
+
+class CalculationRead(BaseModel):
+    id: int
+    operation: str
+    operand1: float
+    operand2: float
+    result: float
 
     class Config:
         from_attributes = True

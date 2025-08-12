@@ -1,15 +1,28 @@
-# Python / env
-.venv/
+# Python
 __pycache__/
-*.py[cod]
+*.pyc
+*.pyo
+*.pyd
 .pytest_cache/
 
-# App artifacts
-app.db
-.playwright/
-*.log
+# Virtualenvs
+.venv/
+venv/
+env/
 
-# Editors/OS
-.vscode/
-.idea/
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.trace/
+*Playwright*
+
+# Node / misc
+node_modules/
+
+# Local DB / artifacts
+app.db
+
+# OS/editor
 .DS_Store
+*.swp

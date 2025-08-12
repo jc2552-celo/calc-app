@@ -1,22 +1,12 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String, DateTime, Enum, JSON
-from datetime import datetime
-import enum
-from .db import Base
-
-class OperationType(str, enum.Enum):
-    add = "add"
-    subtract = "subtract"
-    multiply = "multiply"
-    divide = "divide"
+from sqlalchemy import Column, Integer, Float, String, DateTime, func
+from app.db import Base
 
 class Calculation(Base):
     __tablename__ = "calculations"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    user_id: Mapped[str] = mapped_column(String(100), index=True)
-    operation: Mapped[OperationType] = mapped_column(Enum(OperationType, native_enum=False))
-    operands: Mapped[list] = mapped_column(JSON)
-    result: Mapped[float | None] = mapped_column()
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    id = Column(Integer, primary_key=True, index=True)
+    operation = Column(String, nullable=False, index=True)
+    operand1 = Column(Float, nullable=False)
+    operand2 = Column(Float, nullable=False)
+    result   = Column(Float, nullable=False)
+    created_at = Column(DateTime, nullable=False, server_default=func.now())
